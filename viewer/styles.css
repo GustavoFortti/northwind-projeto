@@ -1,0 +1,1363 @@
+:root {
+  --bg: #0d1117;
+  --bg-soft: #12181f;
+  --panel: #161d26;
+  --card: #1a222c;
+  --card-head: #202a36;
+  --border: #2a3543;
+  --text: #dbe4ee;
+  --muted: #7d8b9c;
+  --accent: #58a6ff;
+  --edge: #46586d;
+  --edge-hot: #58a6ff;
+  --pk: #e3b341;
+  --fk: #58a6ff;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body { height: 100%; }
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  overflow: hidden;
+}
+
+.app { display: flex; height: 100vh; }
+
+/* ── barra lateral esquerda (navegação) ───────────── */
+.sidenav {
+  width: 210px;
+  flex-shrink: 0;
+  background: var(--bg-soft);
+  border-right: 1px solid var(--border);
+  padding: 20px 12px;
+}
+
+.nav-group-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  color: var(--muted);
+  padding: 0 10px 10px;
+}
+
+.nav-btn {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 9px 14px;
+  font-size: 13px;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  cursor: pointer;
+}
+.nav-btn:hover { background: var(--card); }
+.nav-btn.active {
+  background: rgba(88, 166, 255, .12);
+  border-color: rgba(88, 166, 255, .35);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ── layout principal ─────────────────────────────── */
+.main { flex: 1; display: flex; min-width: 0; }
+
+.page-vendas.hidden, .page-metricas-clientes.hidden { display: none; }
+
+.bi-head h1 { font-size: 20px; font-weight: 600; }
+.bi-head p { font-size: 12px; color: var(--muted); margin-top: 3px; }
+.bi-head code {
+  background: var(--card);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 11px;
+}
+
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 18px 10px;
+}
+.chart-card.hidden { display: none; }
+.chart-head { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.chart-head h2 { font-size: 14px; font-weight: 600; }
+.chart-sub { font-size: 11.5px; color: var(--muted); }
+
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--muted);
+  padding: 5px 12px;
+  font-size: 12px;
+  cursor: pointer;
+}
+.btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+
+.bi-error {
+  background: rgba(227, 73, 72, .1);
+  border: 1px solid rgba(227, 73, 72, .4);
+  border-radius: 10px;
+  padding: 14px 18px;
+  font-size: 13px;
+  color: #e66767;
+}
+.bi-error.hidden { display: none; }
+
+/* ── página Vendas ────────────────────────────────────────── */
+.page-vendas {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.vendas-wrap {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.vendas-head { width: 100%; flex-shrink: 0; }
+.vendas-wrap > .bi-error { flex-shrink: 0; }
+.vendas-card-tempo { flex-shrink: 0; }
+
+/* linha do tempo da página Vendas: mesmo padrão visual/estrutural da linha
+   do tempo de Métricas de clientes (duplicado aqui de propósito - cada
+   página do Viewer é independente). Define o "mês vigente" usado para
+   calcular a Oferta máxima de cada produto. */
+.vendas-tempo-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+.vendas-tempo-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.vendas-tempo-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.vendas-tempo {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px 14px 6px;
+  min-width: min-content;
+  width: 100%;
+}
+.vendas-tempo::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 22px;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.vendas-tempo-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.vendas-tempo-marcador {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: inherit;
+}
+.vendas-tempo-marcador:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, .45);
+}
+
+.vendas-tempo-ponto {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px solid var(--muted);
+  transition: width .15s, height .15s, background .15s, border-color .15s;
+}
+.vendas-tempo-marcador:hover .vendas-tempo-ponto { border-color: var(--accent); }
+.vendas-tempo-marcador.selecionado .vendas-tempo-ponto {
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(88, 166, 255, .2);
+}
+
+.vendas-tempo-rotulo {
+  font-size: 11px;
+  color: var(--muted);
+  height: 14px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+.vendas-tempo-rotulo--selecionado { color: var(--accent); font-weight: 700; }
+
+/* grid de duas colunas: esquerda ~55% (busca, lista, carrinho) e
+   direita ~45% (sugestões). No desktop a área ocupa exatamente a
+   altura restante da viewport - busca e carrinho têm altura fixa,
+   "produtos encontrados" absorve o espaço livre, e a coluna direita
+   sempre tem a mesma altura da soma dos três blocos da esquerda (é
+   garantido pela própria grid: as duas colunas têm height:100% do
+   mesmo container). Cada bloco rola só por dentro; nada cresce com o
+   conteúdo. Abaixo de 1000px volta ao fluxo normal empilhado com
+   rolagem da página (ver media query mais abaixo).
+   */
+.vendas-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2222fr) minmax(0, 1fr);
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+.vendas-col-esq {
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) 292px;
+  gap: 16px;
+  min-height: 0;
+  height: 100%;
+}
+.vendas-col-dir {
+  min-height: 0;
+  height: 100%;
+}
+
+.vendas-card-cliente,
+.vendas-card-busca,
+.vendas-card-lista,
+.vendas-card-carrinho,
+.vendas-card-sugestoes {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  height: 100%;
+}
+.vendas-card-lista .chart-head,
+.vendas-card-carrinho .chart-head,
+.vendas-card-sugestoes .chart-head { flex-shrink: 0; }
+.vendas-card-carrinho .vendas-carrinho-foot { flex-shrink: 0; }
+
+.vendas-search-label {
+  display: block;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+.vendas-search-input {
+  width: 100%;
+  background: var(--card-head);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  padding: 12px 14px;
+  font-family: inherit;
+}
+.vendas-search-input::placeholder { color: var(--muted); }
+.vendas-search-input:focus { outline: 2px solid var(--accent); outline-offset: 1px; border-color: var(--accent); }
+
+/* busca de cliente: dropdown de resultados é overlay (position: absolute)
+   para não empurrar o resto da grid de altura fixa */
+.vendas-cliente-busca-wrap { position: relative; }
+
+.vendas-cliente-resultados {
+  position: absolute;
+  z-index: 60;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  background: #202a36;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .5);
+}
+.vendas-cliente-resultados.hidden { display: none; }
+.vendas-cliente-resultados::-webkit-scrollbar { width: 8px; }
+.vendas-cliente-resultados::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.vendas-cliente-resultado-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid var(--border);
+  padding: 8px 12px;
+  cursor: pointer;
+  font-family: inherit;
+  color: inherit;
+}
+.vendas-cliente-resultado-item:last-child { border-bottom: none; }
+.vendas-cliente-resultado-item:hover,
+.vendas-cliente-resultado-item:focus-visible {
+  background: #29343f;
+  outline: none;
+}
+.vendas-cliente-resultado-empresa {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+}
+.vendas-cliente-resultado-meta {
+  font-size: 11.5px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+.vendas-cliente-resultado-vazio {
+  padding: 14px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 12.5px;
+}
+
+.vendas-cliente-ativo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 10px 12px;
+  background: rgba(88, 166, 255, .08);
+  border: 1px solid rgba(88, 166, 255, .3);
+  border-radius: 8px;
+}
+.vendas-cliente-ativo.hidden { display: none; }
+.vendas-cliente-ativo-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.vendas-cliente-ativo-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--accent);
+}
+.vendas-cliente-ativo-empresa {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vendas-cliente-ativo-meta {
+  font-size: 11.5px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vendas-lista, .vendas-carrinho {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.vendas-sugestoes {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: auto;
+  padding-right: 10px;
+}
+
+.vendas-lista::-webkit-scrollbar,
+.vendas-carrinho::-webkit-scrollbar,
+.vendas-sugestoes::-webkit-scrollbar { width: 8px; height: 8px; }
+.vendas-lista::-webkit-scrollbar-thumb,
+.vendas-carrinho::-webkit-scrollbar-thumb,
+.vendas-sugestoes::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.vendas-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: var(--card-head);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.vendas-row:hover { border-color: #3d4d61; }
+
+.vendas-row-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.vendas-row-nome {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vendas-row-meta {
+  font-size: 11.5px;
+  color: var(--muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vendas-row-consumo {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 92px;
+}
+.vendas-row-consumo-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.vendas-row-consumo-valor {
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.vendas-row-metrics {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.vendas-row-preco {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.vendas-row-oferta {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  min-width: 84px;
+}
+.vendas-row-oferta-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* tag de oferta: mesmo padrão de cores de .metricas-oferta (duplicado
+   aqui de propósito - cada página do Viewer é independente) */
+.vendas-oferta {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vendas-oferta--ativa {
+  background: rgba(63, 185, 80, .15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, .4);
+}
+.vendas-oferta--sem-desconto {
+  background: rgba(125, 139, 156, .15);
+  color: var(--muted);
+  border: 1px solid rgba(125, 139, 156, .35);
+}
+.vendas-oferta--sem-registro {
+  background: transparent;
+  color: var(--muted);
+  border: 1px dashed rgba(125, 139, 156, .4);
+}
+
+.vendas-btn {
+  flex-shrink: 0;
+  background: rgba(88, 166, 255, .12);
+  border: 1px solid rgba(88, 166, 255, .35);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 8px 14px;
+  min-height: 34px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.vendas-btn:hover:not(:disabled) { background: rgba(88, 166, 255, .2); }
+.vendas-btn:disabled {
+  cursor: default;
+  background: transparent;
+  border-color: var(--border);
+  color: var(--muted);
+}
+
+.vendas-btn-remove {
+  flex-shrink: 0;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  border-radius: 6px;
+  width: 34px;
+  height: 34px;
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+.vendas-btn-remove:hover { color: #e66767; border-color: rgba(230, 103, 103, .5); }
+
+.vendas-empty {
+  padding: 26px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.vendas-carrinho-foot {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
+
+/* tabela enxuta de sugestões - linhas de ~64-80px, sem cards altos */
+.vendas-sug-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+/* larguras fixas: a tabela sempre cabe na coluna, texto longo trunca com
+   reticências (título completo fica disponível no atributo title) - a
+   coluna de ação tem folga de sobra para o botão nunca cortar */
+.vendas-sug-table th:nth-child(1), .vendas-sug-table td:nth-child(1) { width: 23%; }
+.vendas-sug-table th:nth-child(2), .vendas-sug-table td:nth-child(2) { width: 14%; }
+.vendas-sug-table th:nth-child(3), .vendas-sug-table td:nth-child(3) { width: 15%; }
+.vendas-sug-table th:nth-child(4), .vendas-sug-table td:nth-child(4) { width: 25%; }
+.vendas-sug-table th:nth-child(5), .vendas-sug-table td:nth-child(5) { width: 23%; }
+
+.vendas-sug-table th {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  text-align: left;
+  padding: 8px 7px;
+  border-bottom: 1px solid var(--border);
+  white-space: normal;
+  line-height: 1.3;
+}
+.vendas-sug-table th.num, .vendas-sug-table td.num { text-align: right; }
+.vendas-sug-table th.acao, .vendas-sug-table td.acao { text-align: right; }
+
+.vendas-sug-table td {
+  padding: 16px 7px;
+  border-bottom: 1px solid #212b37;
+  vertical-align: middle;
+  overflow: hidden;
+}
+.vendas-sug-table tbody tr:last-child td { border-bottom: none; }
+.vendas-sug-table tbody tr:hover { background: #202a36; }
+.vendas-sug-table tbody tr:focus-visible {
+  background: #202a36;
+  outline: none;
+  box-shadow: inset 0 0 0 1px var(--accent);
+}
+.vendas-sug-table tbody tr:focus:not(:focus-visible) { outline: none; }
+
+.vendas-sug-nome,
+.vendas-sug-meta {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.vendas-sug-nome { font-size: 13px; font-weight: 600; color: var(--text); }
+.vendas-sug-meta { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+.vendas-sug-num { font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+.vendas-sug-consumo { font-variant-numeric: tabular-nums; color: var(--text); font-weight: 600; white-space: nowrap; }
+
+.vendas-btn-sm {
+  flex-shrink: 0;
+  background: rgba(88, 166, 255, .12);
+  border: 1px solid rgba(88, 166, 255, .35);
+  color: var(--accent);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.vendas-btn-sm:hover { background: rgba(88, 166, 255, .2); }
+
+/* tooltip explicativo da sugestão - rolagem interna, nunca sai da
+   viewport (posicionamento calculado em JS). Um pouco mais largo que os
+   420px iniciais porque o conteúdo de múltiplas origens (uma seção
+   completa por relação) precisa de mais espaço pra não ficar apertado */
+.vendas-tooltip {
+  position: fixed;
+  z-index: 70;
+  width: 460px;
+  max-width: calc(100vw - 20px);
+  max-height: 60vh;
+  overflow-y: auto;
+  background: #202a36;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: var(--text);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, .5);
+}
+.vendas-tooltip.hidden { display: none; }
+.vendas-tooltip::-webkit-scrollbar { width: 8px; }
+.vendas-tooltip::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.vt-titulo { font-size: 12.5px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+.vt-paragrafo { color: var(--text); margin-bottom: 8px; }
+.vt-interpretacao { color: var(--muted); }
+
+.vt-lista { list-style: none; margin: 0 0 8px; padding: 0; }
+.vt-lista li {
+  position: relative;
+  padding-left: 14px;
+  color: var(--text);
+  margin-bottom: 4px;
+}
+.vt-lista li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: var(--muted);
+}
+
+.vt-sep { border: none; border-top: 1px solid var(--border); margin: 12px 0; }
+
+/* uma seção completa por origem, separada visualmente das demais */
+.vt-relacao {
+  border-left: 2px solid var(--border);
+  padding-left: 10px;
+  margin-bottom: 14px;
+}
+.vt-relacao:last-of-type { margin-bottom: 8px; }
+.vt-relacao-titulo {
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 6px;
+}
+
+.vt-subtitulo {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  margin: 10px 0 4px;
+}
+.vt-subtitulo:first-of-type { margin-top: 0; }
+
+.vt-conclusao {
+  color: var(--muted);
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--border);
+}
+
+.vt-formula {
+  font-size: 11.5px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 6px;
+  word-break: break-word;
+}
+.vt-formula-label { color: var(--text); font-weight: 600; }
+
+/* ── página Métricas de clientes ──────────────────────────── */
+.page-metricas-clientes {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.metricas-wrap {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.metricas-head { width: 100%; }
+
+/* mês/ano por extenso, bem visível acima da linha do tempo */
+.metricas-mes-atual {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 6px;
+}
+.metricas-mes-atual-rotulo {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .06em;
+  color: var(--muted);
+}
+.metricas-mes-atual-valor {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.metricas-empty {
+  padding: 26px 12px;
+  text-align: center;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* linha do tempo: uma linha contínua com um marcador por ano_mes; rola por
+   dentro em telas estreitas em vez de espremer os marcadores. Centralizada
+   quando cabe inteira; se não couber, o excedente rola por dentro. */
+.metricas-tempo-scroll {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 2px;
+}
+.metricas-tempo-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.metricas-tempo-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+
+.metricas-tempo {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 14px;
+  padding: 8px 14px 6px;
+  min-width: min-content;
+  width: 100%;
+}
+/* a linha horizontal passa pelo centro vertical dos botões de 28px
+   (padding-top de 8px + metade dos 28px = 22px) */
+.metricas-tempo::before {
+  content: "";
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  top: 22px;
+  height: 2px;
+  background: var(--border);
+  z-index: 0;
+}
+
+.metricas-tempo-item {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.metricas-tempo-marcador {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-family: inherit;
+}
+.metricas-tempo-marcador:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, .45);
+}
+
+.metricas-tempo-ponto {
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--card);
+  border: 2px solid var(--muted);
+  transition: width .15s, height .15s, background .15s, border-color .15s;
+}
+.metricas-tempo-marcador:hover .metricas-tempo-ponto { border-color: var(--accent); }
+.metricas-tempo-marcador.selecionado .metricas-tempo-ponto {
+  width: 16px;
+  height: 16px;
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(88, 166, 255, .2);
+}
+
+.metricas-tempo-rotulo {
+  font-size: 11px;
+  color: var(--muted);
+  height: 14px;
+  line-height: 14px;
+  white-space: nowrap;
+}
+.metricas-tempo-rotulo--selecionado { color: var(--accent); font-weight: 700; }
+
+/* barra de filtros: Cliente/Empresa são busca por texto; as 5 métricas
+   filtram por classe de tendência (mesmas 3 classes da tabela) */
+.metricas-filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+.metricas-filtro-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  flex: 1 1 140px;
+  min-width: 130px;
+}
+.metricas-filtro-campo-acao { flex: 0 0 auto; }
+.metricas-filtro-campo label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.metricas-filtro-campo input,
+.metricas-filtro-campo select {
+  background: var(--card-head);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 12.5px;
+  padding: 7px 10px;
+  font-family: inherit;
+  min-height: 33px;
+}
+.metricas-filtro-campo input::placeholder { color: var(--muted); }
+.metricas-filtro-campo input:focus,
+.metricas-filtro-campo select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+  border-color: var(--accent);
+}
+
+/* altura uniforme das linhas da tabela mestre - cabe até 2 linhas dos
+   nomes/empresas mais longos (ex.: "Ana Trujillo Emparedados y helados",
+   "FISSA Fabrica Inter. Salchichas S.A.") sem cortar texto */
+:root { --metricas-altura-linha: 66px; }
+
+/* tabela de clientes: cabeçalho fixo durante a rolagem interna do card.
+   overflow-x fica escondido de propósito - com table-layout: fixed e
+   colunas proporcionais (ver colgroup em metricas-clientes.js) a tabela
+   nunca deveria precisar rolar na horizontal; isso também evita o
+   quadrado do canto onde as duas barras de rolagem se encontrariam. */
+.metricas-tabela-scroll {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-color: var(--border) var(--card);
+}
+.metricas-tabela-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.metricas-tabela-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.metricas-tabela-scroll::-webkit-scrollbar-track,
+.metricas-tabela-scroll::-webkit-scrollbar-corner { background: var(--card); }
+
+.metricas-table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.metricas-table th {
+  position: sticky;
+  top: 0;
+  background: var(--card);
+  color: var(--muted);
+  font-weight: 600;
+  font-size: 10.5px;
+  text-transform: uppercase;
+  letter-spacing: .04em;
+  text-align: left;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.metricas-table td {
+  height: var(--metricas-altura-linha);
+  padding: 8px 12px;
+  border-bottom: 1px solid #212b37;
+  vertical-align: middle;
+  line-height: 1.3;
+}
+.metricas-table--linhas tbody tr { height: var(--metricas-altura-linha); }
+.metricas-table tbody tr:last-child td { border-bottom: none; }
+.metricas-table tbody tr:hover { background: #202a36; }
+
+.metricas-td-cliente, .metricas-td-empresa {
+  color: var(--text);
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+.metricas-td-cliente { font-weight: 600; }
+.metricas-td-status { text-align: left; white-space: nowrap; }
+
+/* estados de tendência (usados nas tags "Aumentou/Normal/Diminuiu" dentro
+   do painel explicativo, por métrica): ícone + texto (nunca só cor), com
+   contraste suficiente no fundo escuro */
+.metricas-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.metricas-status--aumentou {
+  background: rgba(63, 185, 80, .15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, .4);
+}
+.metricas-status--diminuiu {
+  background: rgba(230, 103, 103, .15);
+  color: #e66767;
+  border: 1px solid rgba(230, 103, 103, .4);
+}
+.metricas-status--normal {
+  background: rgba(125, 139, 156, .15);
+  color: var(--muted);
+  border: 1px solid rgba(125, 139, 156, .35);
+}
+
+/* Status geral do cliente (tabela + cabeçalho do painel): 4 classes com
+   cor + rótulo próprios, nunca só cor */
+.metricas-status-cliente {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.metricas-status-cliente--bom {
+  background: rgba(63, 185, 80, .15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, .4);
+}
+.metricas-status-cliente--normal {
+  background: rgba(125, 139, 156, .15);
+  color: var(--muted);
+  border: 1px solid rgba(125, 139, 156, .35);
+}
+.metricas-status-cliente--atencao {
+  background: rgba(224, 179, 65, .15);
+  color: #e0b341;
+  border: 1px solid rgba(224, 179, 65, .4);
+}
+.metricas-status-cliente--ruim {
+  background: rgba(230, 103, 103, .15);
+  color: #e66767;
+  border: 1px solid rgba(230, 103, 103, .4);
+}
+
+/* ── layout mestre-detalhe: tabela à esquerda, painel do cliente à direita ──
+   os dois cards têm exatamente a mesma altura externa (controlada pelo
+   grid, não pelo conteúdo) e rolam de forma independente por dentro. */
+.metricas-grid {
+  display: grid;
+  grid-template-columns: 9fr 11fr;
+  gap: 16px;
+  align-items: stretch;
+  height: clamp(560px, calc(100vh - 300px), 760px);
+}
+.metricas-card-tabela, .metricas-card-painel {
+  min-width: 0;
+  height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+.metricas-card-tabela {
+  display: flex;
+  flex-direction: column;
+}
+
+.metricas-table--linhas tbody tr { cursor: pointer; }
+.metricas-table--linhas tbody tr:focus-visible {
+  outline: none;
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+.metricas-table--linhas tbody tr.metricas-row-selecionada {
+  background: rgba(88, 166, 255, .12);
+  box-shadow: inset 3px 0 0 var(--accent);
+}
+
+/* ── painel explicativo do cliente selecionado ──
+   rola por inteiro dentro do próprio card, independente da tabela; ao
+   trocar de cliente o JS zera scrollTop pra mostrar o topo do novo cliente. */
+.metricas-painel {
+  height: 100%;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  scrollbar-color: var(--border) var(--card);
+}
+.metricas-painel::-webkit-scrollbar { width: 8px; height: 8px; }
+.metricas-painel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.metricas-painel::-webkit-scrollbar-track,
+.metricas-painel::-webkit-scrollbar-corner { background: var(--card); }
+
+.metricas-painel-cabecalho { display: flex; flex-direction: column; gap: 6px; }
+.metricas-painel-rotulo {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: var(--muted);
+}
+.metricas-painel-titulo-linha {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.metricas-painel-titulo-linha h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text);
+}
+.metricas-painel-contato {
+  font-size: 12px;
+  color: var(--muted);
+}
+.metricas-painel-mes {
+  font-size: 12px;
+  color: var(--muted);
+}
+.metricas-painel-frase {
+  font-size: 13px;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ── abas do painel de detalhes (Por que o Status / O que fazer) ── */
+.metricas-abas {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border);
+  margin: 4px 0 2px;
+}
+.metricas-aba {
+  font-family: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--muted);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  padding: 8px 12px 9px;
+  cursor: pointer;
+  margin-bottom: -1px;
+}
+.metricas-aba:hover { color: var(--text); }
+.metricas-aba:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, .5);
+  border-radius: 4px;
+}
+.metricas-aba--ativa {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+.metricas-abas-paineis { display: flex; flex-direction: column; }
+.metricas-aba-painel {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  padding-top: 14px;
+}
+.metricas-aba-painel[hidden] { display: none; }
+.metricas-aba-painel:focus-visible { outline: none; }
+
+.metricas-graficos {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.metricas-grafico {
+  flex: 1 1 260px;
+  min-width: 220px;
+  background: var(--card-head);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+}
+.metricas-grafico-titulo { font-size: 13px; font-weight: 700; color: var(--text); margin: 0 0 2px; }
+.metricas-grafico-sub { font-size: 11px; color: var(--muted); margin: 0 0 8px; }
+.metricas-grafico svg { display: block; width: 100%; height: auto; }
+.metricas-grafico .mg-eixo { fill: var(--muted); font-size: 9px; }
+.metricas-grafico .mg-grade { stroke: #2a3543; stroke-width: 1; }
+.metricas-grafico .mg-linha { fill: none; stroke-width: 2; }
+.metricas-grafico .mg-ponto { stroke: var(--card-head); stroke-width: 1.5; }
+.metricas-grafico .mg-ponto--selecionado { stroke: var(--text); stroke-width: 2; }
+
+.metricas-porque { display: flex; flex-direction: column; gap: 10px; }
+.metricas-porque h4 { margin: 0; font-size: 14px; color: var(--text); }
+
+.metricas-metrica-card {
+  background: var(--card-head);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.metricas-metrica-linha-topo {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.metricas-metrica-nome { font-size: 13px; font-weight: 700; color: var(--text); }
+.metricas-metrica-papel {
+  font-size: 10.5px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: .03em;
+  margin-left: auto;
+}
+.metricas-metrica-valores, .metricas-metrica-comparacoes {
+  font-size: 12px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
+}
+.metricas-metrica-interpretacao {
+  font-size: 12.5px;
+  color: var(--text);
+  margin: 2px 0 0;
+}
+
+/* ── aba "O que fazer": produtos por recorrência + oferta ── */
+.metricas-fazer { display: flex; flex-direction: column; gap: 6px; }
+.metricas-fazer h4 { margin: 0; font-size: 14px; color: var(--text); }
+.metricas-fazer-sub { font-size: 12px; color: var(--muted); margin: 0; line-height: 1.45; }
+.metricas-fazer-explicacao { margin-bottom: 8px; }
+
+/* linha 20% mais alta que a tabela de clientes (var(--metricas-altura-linha)):
+   o texto explicativo do Score aqui ocupa 3 linhas, não cabe na mesma altura. */
+.metricas-table--fazer { table-layout: fixed; min-width: 0; }
+.metricas-table--fazer td { height: calc(var(--metricas-altura-linha) * 1.2); }
+
+.metricas-td-produto {
+  color: var(--text);
+  font-weight: 600;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: normal;
+}
+
+.metricas-td-categoria {
+  color: var(--muted);
+  font-size: 12px;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.metricas-td-score {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
+}
+.metricas-score-pontos { font-size: 12.5px; font-weight: 700; color: var(--text); }
+
+.metricas-oferta {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.metricas-oferta--ativa {
+  background: rgba(63, 185, 80, .15);
+  color: #3fb950;
+  border: 1px solid rgba(63, 185, 80, .4);
+}
+.metricas-oferta--sem-desconto {
+  background: rgba(125, 139, 156, .15);
+  color: var(--muted);
+  border: 1px solid rgba(125, 139, 156, .35);
+}
+.metricas-oferta--sem-registro {
+  background: transparent;
+  color: var(--muted);
+  border: 1px dashed rgba(125, 139, 156, .4);
+}
+
+@media (max-width: 1000px) {
+  .metricas-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 1000px) {
+  /* abaixo de ~1000px as colunas voltam a empilhar em uma só, na ordem
+     busca / produtos / carrinho / sugestões, com rolagem normal da
+     página - a igualdade de alturas só vale no layout de duas colunas */
+  .vendas-wrap { height: auto; }
+  .vendas-cols {
+    display: flex;
+    flex-direction: column;
+    flex: none;
+    min-height: 0;
+  }
+  .vendas-col-esq {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    height: auto;
+  }
+  .vendas-col-dir { height: auto; }
+
+  .vendas-card-cliente,
+  .vendas-card-busca,
+  .vendas-card-lista,
+  .vendas-card-carrinho,
+  .vendas-card-sugestoes {
+    height: auto;
+  }
+
+  .vendas-lista, .vendas-carrinho {
+    flex: none;
+    max-height: 360px;
+  }
+  .vendas-sugestoes { flex: none; max-height: 420px; }
+}
+
+@media (max-width: 640px) {
+  /* barra lateral vira uma faixa horizontal no topo, liberando a
+     largura toda para o conteúdo (afeta todas as páginas, não só Vendas -
+     hoje não existe nenhum tratamento mobile para o shell do app) */
+  .app { flex-direction: column; height: 100vh; }
+  .sidenav {
+    width: 100%;
+    flex-shrink: 0;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    overflow-x: auto;
+  }
+  .nav-group-label { display: none; }
+  .nav-btn { width: auto; white-space: nowrap; }
+
+  .vendas-wrap, .metricas-wrap { padding: 18px 14px 32px; }
+
+  .vendas-row { flex-wrap: wrap; }
+  .vendas-row-info { flex: 1 1 100%; }
+  .vendas-row-consumo { flex: 1 1 auto; align-items: flex-start; }
+  .vendas-row-metrics { flex: 1 1 auto; align-items: flex-start; }
+  .vendas-row-oferta { flex: 1 1 auto; align-items: flex-start; }
+  .vendas-row .vendas-btn,
+  .vendas-row .vendas-btn-remove { flex: 0 0 auto; }
+  .vendas-row .vendas-btn { flex: 1 1 100%; text-align: center; }
+
+  /* 5 colunas não cabem confortavelmente em ~360-390px mesmo truncando
+     texto - volta a largura automática (nada fica espremido/cortado) e
+     rola só dentro da própria caixa, igual às outras tabelas do app */
+  .vendas-sug-table { table-layout: auto; min-width: 560px; }
+
+  /* cliente ativo: nome + botão de limpar quebram em duas linhas em
+     telas estreitas, em vez de espremer */
+  .vendas-cliente-ativo { flex-wrap: wrap; }
+  .vendas-cliente-ativo-info { flex: 1 1 100%; }
+}

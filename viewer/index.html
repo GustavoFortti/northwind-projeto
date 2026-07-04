@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Northwind · Viewer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidenav">
+      <span class="nav-group-label">Principal</span>
+      <button class="nav-btn active" data-page="vendas">Recomendação de produtos</button>
+      <button class="nav-btn" data-page="metricas-clientes">Métricas de clientes</button>
+    </aside>
+
+    <main class="main">
+      <!-- ── página Vendas ─────────────────────────────── -->
+      <section id="page-vendas" class="page-vendas">
+        <div class="vendas-wrap">
+          <header class="bi-head vendas-head">
+            <h1>Recomendação de produtos</h1>
+            <p>Monte uma negociação e receba sugestões de produtos associados</p>
+          </header>
+
+          <div id="vendas-error" class="bi-error hidden"></div>
+
+          <div class="chart-card vendas-card-tempo">
+            <div class="chart-head">
+              <h2>Linha do tempo</h2>
+              <span class="chart-sub" id="vendas-tempo-sub">Selecione o mês para calcular a oferta máxima de cada produto</span>
+            </div>
+            <div class="vendas-tempo-scroll">
+              <div
+                class="vendas-tempo" id="vendas-tempo"
+                role="group" aria-label="Selecionar mês para a oferta máxima"
+              ></div>
+            </div>
+          </div>
+
+          <div class="vendas-cols">
+            <div class="vendas-col-esq">
+              <div class="chart-card vendas-card-cliente">
+                <label class="vendas-search-label" for="vendas-cliente-busca">Buscar cliente</label>
+                <div class="vendas-cliente-busca-wrap" id="vendas-cliente-busca-wrap">
+                  <input
+                    type="search" id="vendas-cliente-busca" class="vendas-search-input"
+                    placeholder="Código, empresa, contato, cidade ou país..." autocomplete="off"
+                  >
+                  <div class="vendas-cliente-resultados hidden" id="vendas-cliente-resultados"></div>
+                </div>
+                <div class="vendas-cliente-ativo hidden" id="vendas-cliente-ativo">
+                  <div class="vendas-cliente-ativo-info">
+                    <span class="vendas-cliente-ativo-label">Cliente ativo</span>
+                    <span class="vendas-cliente-ativo-empresa" id="vendas-cliente-ativo-empresa"></span>
+                    <span class="vendas-cliente-ativo-meta" id="vendas-cliente-ativo-meta"></span>
+                  </div>
+                  <button type="button" id="vendas-cliente-limpar" class="btn-ghost">Limpar seleção</button>
+                </div>
+              </div>
+
+              <div class="chart-card vendas-card-busca">
+                <label class="vendas-search-label" for="vendas-busca">Buscar produtos</label>
+                <input
+                  type="search" id="vendas-busca" class="vendas-search-input"
+                  placeholder="Nome, categoria ou fornecedor..." autocomplete="off"
+                >
+              </div>
+
+              <div class="chart-card vendas-card-lista">
+                <div class="chart-head">
+                  <h2>Produtos encontrados</h2>
+                  <span class="chart-sub" id="vendas-lista-contagem">Carregando produtos…</span>
+                </div>
+                <div class="vendas-lista" id="vendas-lista">
+                  <div class="vendas-empty">Carregando produtos…</div>
+                </div>
+              </div>
+
+              <div class="chart-card vendas-card-carrinho">
+                <div class="chart-head">
+                  <h2>Carrinho de produtos</h2>
+                  <span class="chart-sub" id="vendas-carrinho-contagem">0 produtos no carrinho</span>
+                </div>
+                <div class="vendas-carrinho" id="vendas-carrinho">
+                  <div class="vendas-empty">Adicione produtos para montar a negociação.</div>
+                </div>
+                <div class="vendas-carrinho-foot">
+                  <button type="button" id="vendas-limpar" class="btn-ghost">Limpar carrinho</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="vendas-col-dir">
+              <div class="chart-card vendas-card-sugestoes">
+                <div class="chart-head">
+                  <h2>Produtos associados ao carrinho</h2>
+                  <span class="chart-sub">Sugestões baseadas nos produtos que apareceram juntos em pedidos anteriores.</span>
+                </div>
+                <div class="vendas-sugestoes" id="vendas-sugestoes">
+                  <div class="vendas-empty">Adicione um produto ao carrinho para receber sugestões.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── página Métricas de clientes ───────────────── -->
+      <section id="page-metricas-clientes" class="page-metricas-clientes hidden">
+        <div class="metricas-wrap">
+          <header class="bi-head metricas-head">
+            <h1>Métricas de clientes</h1>
+            <p class="metricas-mes-atual">
+              <span class="metricas-mes-atual-rotulo">Período selecionado</span>
+              <span class="metricas-mes-atual-valor" id="metricas-mes-atual-valor"></span>
+            </p>
+          </header>
+
+          <div id="metricas-error" class="bi-error hidden"></div>
+
+          <div class="chart-card metricas-card-tempo">
+            <div class="chart-head">
+              <h2>Linha do tempo</h2>
+              <span class="chart-sub">Selecione o mês para ver o retrato daquele período</span>
+            </div>
+            <div class="metricas-tempo-scroll">
+              <div
+                class="metricas-tempo" id="metricas-tempo"
+                role="group" aria-label="Selecionar mês histórico"
+              ></div>
+            </div>
+          </div>
+
+          <div class="metricas-grid">
+            <div class="chart-card metricas-card-tabela">
+              <div class="chart-head">
+                <h2>Clientes</h2>
+                <span class="chart-sub" id="metricas-tabela-contagem">Carregando métricas de clientes…</span>
+              </div>
+
+              <div class="metricas-filtros" id="metricas-filtros">
+                <div class="metricas-filtro-campo">
+                  <label for="metricas-filtro-cliente">Nome do cliente</label>
+                  <input type="search" id="metricas-filtro-cliente" placeholder="Buscar cliente..." autocomplete="off">
+                </div>
+                <div class="metricas-filtro-campo">
+                  <label for="metricas-filtro-empresa">Empresa</label>
+                  <input type="search" id="metricas-filtro-empresa" placeholder="Buscar nome..." autocomplete="off">
+                </div>
+                <div class="metricas-filtro-campo">
+                  <label for="metricas-filtro-status">Status</label>
+                  <select id="metricas-filtro-status">
+                    <option value="todos">Todos</option>
+                    <option value="bom">Bom</option>
+                    <option value="normal">Normal</option>
+                    <option value="atencao">Atenção</option>
+                    <option value="ruim">Ruim</option>
+                  </select>
+                </div>
+                <div class="metricas-filtro-campo metricas-filtro-campo-acao">
+                  <label>&nbsp;</label>
+                  <button type="button" id="metricas-filtro-limpar" class="btn-ghost">Limpar filtros</button>
+                </div>
+              </div>
+
+              <div class="metricas-tabela-scroll" id="metricas-tabela-scroll">
+                <div class="metricas-empty">Carregando métricas de clientes…</div>
+              </div>
+            </div>
+
+            <div class="chart-card metricas-card-painel">
+              <div id="metricas-painel" class="metricas-painel">
+                <div class="metricas-empty">Selecione um cliente para visualizar o histórico e a justificativa do Status.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <div id="vendas-tooltip" class="vendas-tooltip hidden" role="tooltip"></div>
+
+  <script src="lib/sql-wasm.js"></script>
+  <script src="bi.js"></script>
+  <script src="vendas.js"></script>
+  <script src="metricas-clientes.js"></script>
+</body>
+</html>
