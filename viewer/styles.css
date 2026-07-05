@@ -66,10 +66,12 @@ body {
   font-weight: 600;
 }
 
+.nav-gap { margin-top: 22px; }
+
 /* ── layout principal ─────────────────────────────── */
 .main { flex: 1; display: flex; min-width: 0; }
 
-.page-vendas.hidden, .page-metricas-clientes.hidden { display: none; }
+.page-vendas.hidden, .page-metricas-clientes.hidden, .page-como-usar.hidden { display: none; }
 
 .bi-head h1 { font-size: 20px; font-weight: 600; }
 .bi-head p { font-size: 12px; color: var(--muted); margin-top: 3px; }
@@ -734,6 +736,83 @@ body {
   word-break: break-word;
 }
 .vt-formula-label { color: var(--text); font-weight: 600; }
+
+/* ── página Como usar o sistema? ───────────────────────────── */
+.page-como-usar {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+}
+
+.como-usar-wrap {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 28px 32px 48px;
+  height: 100%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.como-usar-head { width: 100%; flex-shrink: 0; }
+
+.como-usar-card {
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* o diagrama é uma imagem grande (exportada do Excalidraw) - rola nas duas
+   direções em vez de espremer o texto até ficar ilegível. Scrollbar no
+   mesmo padrão do resto do site (trilha e canto na cor do card, sem
+   quadrado branco no encontro das duas barras). */
+.como-usar-scroll {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  padding: 18px;
+  scrollbar-color: var(--border) var(--card);
+}
+.como-usar-scroll::-webkit-scrollbar { width: 8px; height: 8px; }
+.como-usar-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.como-usar-scroll::-webkit-scrollbar-track,
+.como-usar-scroll::-webkit-scrollbar-corner { background: var(--card); }
+
+/* docs/sistema.md renderizado - tipografia simples, sem
+   framework de markdown (parser mínimo em como-usar.js, só o subconjunto
+   de sintaxe usado no arquivo). */
+.como-usar-doc {
+  max-width: 760px;
+  margin: 0 auto;
+  color: var(--text);
+  font-size: 13.5px;
+  line-height: 1.6;
+}
+.como-usar-doc h1 { font-size: 22px; font-weight: 700; margin: 0 0 16px; color: var(--text); }
+.como-usar-doc h2 {
+  font-size: 16px;
+  font-weight: 700;
+  margin: 28px 0 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  color: var(--text);
+}
+.como-usar-doc h2:first-child { margin-top: 0; padding-top: 0; border-top: none; }
+.como-usar-doc h3 { font-size: 13.5px; font-weight: 700; margin: 18px 0 8px; color: var(--muted); text-transform: uppercase; letter-spacing: .03em; }
+.como-usar-doc p { margin: 0 0 12px; }
+.como-usar-doc ul, .como-usar-doc ol { margin: 0 0 12px; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+.como-usar-doc li { margin: 0; }
+.como-usar-doc a { color: var(--accent); }
+.como-usar-doc strong { color: var(--text); font-weight: 700; }
+.como-usar-doc img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  margin: 4px 0 14px;
+}
 
 /* ── página Métricas de clientes ──────────────────────────── */
 .page-metricas-clientes {

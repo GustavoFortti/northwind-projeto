@@ -14,6 +14,7 @@ document.querySelectorAll(".nav-btn").forEach((btn) => {
     const page = btn.dataset.page;
     document.getElementById("page-vendas").classList.toggle("hidden", page !== "vendas");
     document.getElementById("page-metricas-clientes").classList.toggle("hidden", page !== "metricas-clientes");
+    document.getElementById("page-como-usar").classList.toggle("hidden", page !== "como-usar");
   });
 });
 

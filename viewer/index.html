@@ -9,14 +9,16 @@
 <body>
   <div class="app">
     <aside class="sidenav">
-      <span class="nav-group-label">Principal</span>
-      <button class="nav-btn active" data-page="vendas">Recomendação de produtos</button>
+      <button class="nav-btn active" data-page="como-usar">Como usar o sistema?</button>
+
+      <span class="nav-group-label nav-gap">Sistema</span>
       <button class="nav-btn" data-page="metricas-clientes">Métricas de clientes</button>
+      <button class="nav-btn" data-page="vendas">Recomendação de produtos</button>
     </aside>
 
     <main class="main">
       <!-- ── página Vendas ─────────────────────────────── -->
-      <section id="page-vendas" class="page-vendas">
+      <section id="page-vendas" class="page-vendas hidden">
         <div class="vendas-wrap">
           <header class="bi-head vendas-head">
             <h1>Recomendação de produtos</h1>
@@ -178,6 +180,23 @@
         </div>
       </section>
 
+      <!-- ── página Como usar o sistema? ───────────────── -->
+      <section id="page-como-usar" class="page-como-usar">
+        <div class="como-usar-wrap">
+          <header class="bi-head como-usar-head">
+            <h1>Como usar o sistema?</h1>
+          </header>
+
+          <div class="chart-card como-usar-card">
+            <div class="como-usar-scroll">
+              <div id="como-usar-doc" class="como-usar-doc">
+                <div class="metricas-empty">Carregando documento…</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
   </div>
 
@@ -187,5 +206,6 @@
   <script src="bi.js"></script>
   <script src="vendas.js"></script>
   <script src="metricas-clientes.js"></script>
+  <script src="como-usar.js"></script>
 </body>
 </html>
