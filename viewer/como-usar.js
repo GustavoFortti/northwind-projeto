@@ -12,10 +12,14 @@
 // docs/sistema.md referencia arquivos irmãos com caminho relativo à própria
 // pasta docs/ (./sistema.svg, ./Recomendação de produtos.png) - como o
 // documento é inserido na página principal (viewer/index.html), o caminho
-// precisa ser reancorado para "docs/..." antes de virar src/href.
+// precisa ser reancorado para "docs/..." antes de virar src/href. Também
+// aceita a forma "<caminho>" do Markdown (destino entre `<` `>`, usada por
+// alguns editores para caminhos com espaço/acento), removendo os colchetes
+// antes de resolver.
 function comoUsarResolveCaminho(url) {
-  if (/^[a-z][a-z0-9+.-]*:/i.test(url) || url.startsWith("/") || url.startsWith("#")) return url;
-  return `docs/${url.replace(/^\.\//, "")}`;
+  const limpo = url.trim().replace(/^<(.*)>$/, "$1");
+  if (/^[a-z][a-z0-9+.-]*:/i.test(limpo) || limpo.startsWith("/") || limpo.startsWith("#")) return limpo;
+  return `docs/${limpo.replace(/^\.\//, "")}`;
 }
 
 // aplica **negrito** e [texto](link) dentro de um bloco de texto plano,
